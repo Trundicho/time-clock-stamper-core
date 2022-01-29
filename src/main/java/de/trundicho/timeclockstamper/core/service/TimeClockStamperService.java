@@ -143,7 +143,7 @@ public class TimeClockStamperService {
     }
 
     private ClockType getCurrentClockType(List<ClockTime> clockTimes) {
-        List<ClockTime> clockTimesWithoutPause = clockTimes.stream().filter(c -> c.getPause() == null).toList();
+        List<ClockTime> clockTimesWithoutPause = clockTimes.stream().filter(c -> c.getPause() == null).collect(Collectors.toList());
         if (clockTimesWithoutPause.size() % 2 == 0) {
             return ClockType.CLOCK_OUT;
         }
@@ -191,7 +191,7 @@ public class TimeClockStamperService {
         clockTimes.addAll(clockTimesToSave.stream()
                                           .filter(c -> c.getDate().getYear() == year && c.getDate().getMonthValue() == month
                                                   && c.getDate().getDayOfMonth() == day)
-                                          .toList());
+                                          .collect(Collectors.toList()));
         clockTimePersistencePort.write(clockTimes);
         return createClockTimeResponse(clockTimes, null, null);
     }
