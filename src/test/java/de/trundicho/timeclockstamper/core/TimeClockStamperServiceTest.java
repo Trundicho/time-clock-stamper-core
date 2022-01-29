@@ -25,7 +25,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class TimeClockStamperServiceTest {
 
     private final String persistenceFile = PropertiesUtil.getString("persistence.file");
-    TimeClockStamperService timeClockStamperService = new TimeClockStamperService(new FilePersistence());
+    TimeClockStamperService timeClockStamperService = new TimeClockStamperService(new FilePersistence(null));
     ObjectMapper objectMapper = JsonMapper.builder().addModule(new JavaTimeModule()).build();
 
     @BeforeEach

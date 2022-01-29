@@ -7,21 +7,25 @@ import java.util.Properties;
 
 public class PropertiesUtil {
     private static final String APPLICATION_PROPERTIES = "application.properties";
-    private static final Properties PROPERTIES;
+    private static Properties properties;
 
     static {
-        PROPERTIES = new Properties();
+        properties = new Properties();
         try {
             String path = Thread.currentThread().getContextClassLoader().getResource("").getPath();
             InputStream is = new BufferedInputStream(new FileInputStream(path + APPLICATION_PROPERTIES));
-            PROPERTIES.load(is);
+            properties.load(is);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
+    public static void setProperties(Properties properties) {
+        PropertiesUtil.properties = properties;
+    }
+
     public static String getString(String property) {
-        return PROPERTIES.getProperty(property);
+        return properties.getProperty(property);
     }
 
 }

@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Properties;
 import java.util.stream.Collectors;
 
 import de.trundicho.timeclockstamper.core.api.ClockTimeDto;
@@ -22,10 +23,16 @@ public class TimeClockStamperService {
 
     private static final int EIGHT_HOURS_IN_MINUTES = 480;
     private final ClockTimePersistencePort clockTimePersistencePort;
-    private final String timezone = PropertiesUtil.getString("time.zone");
+    private final String timezone;
 
     public TimeClockStamperService(ClockTimePersistencePort clockTimePersistencePort) {
+        this(null, clockTimePersistencePort);
+    }
+
+    public TimeClockStamperService(Properties properties, ClockTimePersistencePort clockTimePersistencePort) {
         this.clockTimePersistencePort = clockTimePersistencePort;
+        PropertiesUtil.setProperties(properties);
+        timezone = PropertiesUtil.getString("time.zone");
     }
 
     public ClockTimeDto stampInOrOut() {

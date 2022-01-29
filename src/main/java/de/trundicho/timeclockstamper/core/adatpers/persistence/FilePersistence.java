@@ -7,6 +7,7 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Properties;
 import java.util.stream.Collectors;
 
 import de.trundicho.timeclockstamper.core.domain.model.ClockTime;
@@ -23,11 +24,15 @@ import lombok.extern.slf4j.Slf4j;
 public class FilePersistence implements ClockTimePersistencePort {
 
     private final ObjectMapper objectMapper;
-    private final String persistenceFile = PropertiesUtil.getString("persistence.file");
-    private final String persistenceFolder = PropertiesUtil.getString("persistence.folder");
-    private final String timezone = PropertiesUtil.getString("time.zone");
+    private final String persistenceFile;
+    private final String persistenceFolder;
+    private final String timezone;
 
-    public FilePersistence() {
+    public FilePersistence(Properties properties) {
+        PropertiesUtil.setProperties(properties);
+        persistenceFile = PropertiesUtil.getString("persistence.file");
+        persistenceFolder = PropertiesUtil.getString("persistence.folder");
+        timezone = PropertiesUtil.getString("time.zone");
         this.objectMapper = JsonMapper.builder()
                                         .addModule(new JavaTimeModule())
                                         .build();
