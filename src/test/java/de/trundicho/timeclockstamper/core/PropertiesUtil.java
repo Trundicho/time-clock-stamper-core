@@ -1,4 +1,4 @@
-package de.trundicho.timeclockstamper.core.domain.model;
+package de.trundicho.timeclockstamper.core;
 
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
@@ -18,10 +18,6 @@ public class PropertiesUtil {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    public static void setProperties(Properties properties) {
-        PropertiesUtil.properties = properties;
     }
 
     public static String getString(String property) {

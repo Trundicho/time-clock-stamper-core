@@ -7,12 +7,10 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Properties;
 import java.util.stream.Collectors;
 
 import de.trundicho.timeclockstamper.core.domain.model.ClockTime;
 import de.trundicho.timeclockstamper.core.domain.ports.ClockTimePersistencePort;
-import de.trundicho.timeclockstamper.core.domain.model.PropertiesUtil;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;

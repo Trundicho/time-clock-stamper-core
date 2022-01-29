@@ -7,13 +7,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.Properties;
 import java.util.stream.Collectors;
 
 import de.trundicho.timeclockstamper.core.api.ClockTimeDto;
 import de.trundicho.timeclockstamper.core.api.ClockType;
 import de.trundicho.timeclockstamper.core.domain.model.ClockTime;
-import de.trundicho.timeclockstamper.core.domain.model.PropertiesUtil;
 import de.trundicho.timeclockstamper.core.domain.ports.ClockTimePersistencePort;
 
 import lombok.extern.slf4j.Slf4j;

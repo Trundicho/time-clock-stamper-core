@@ -13,7 +13,6 @@ import de.trundicho.timeclockstamper.core.adatpers.persistence.FilePersistence;
 import de.trundicho.timeclockstamper.core.api.ClockTimeDto;
 import de.trundicho.timeclockstamper.core.api.ClockType;
 import de.trundicho.timeclockstamper.core.domain.model.ClockTime;
-import de.trundicho.timeclockstamper.core.domain.model.PropertiesUtil;
 import de.trundicho.timeclockstamper.core.service.TimeClockStamperService;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
