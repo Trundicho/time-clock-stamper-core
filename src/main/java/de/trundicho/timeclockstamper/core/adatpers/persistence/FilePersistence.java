@@ -28,11 +28,10 @@ public class FilePersistence implements ClockTimePersistencePort {
     private final String persistenceFolder;
     private final String timezone;
 
-    public FilePersistence(Properties properties) {
-        PropertiesUtil.setProperties(properties);
-        persistenceFile = PropertiesUtil.getString("persistence.file");
-        persistenceFolder = PropertiesUtil.getString("persistence.folder");
-        timezone = PropertiesUtil.getString("time.zone");
+    public FilePersistence(String persistenceFolder, String persistenceFile, String timeZone) {
+        this.persistenceFile = persistenceFile;
+        this.persistenceFolder = persistenceFolder;
+        this.timezone = timeZone;
         this.objectMapper = JsonMapper.builder()
                                         .addModule(new JavaTimeModule())
                                         .build();

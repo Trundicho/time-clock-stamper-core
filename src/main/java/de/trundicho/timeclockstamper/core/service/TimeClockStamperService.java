@@ -25,14 +25,9 @@ public class TimeClockStamperService {
     private final ClockTimePersistencePort clockTimePersistencePort;
     private final String timezone;
 
-    public TimeClockStamperService(ClockTimePersistencePort clockTimePersistencePort) {
-        this(null, clockTimePersistencePort);
-    }
-
-    public TimeClockStamperService(Properties properties, ClockTimePersistencePort clockTimePersistencePort) {
+    public TimeClockStamperService(String timeZone, ClockTimePersistencePort clockTimePersistencePort) {
         this.clockTimePersistencePort = clockTimePersistencePort;
-        PropertiesUtil.setProperties(properties);
-        timezone = PropertiesUtil.getString("time.zone");
+        this.timezone = timeZone;
     }
 
     public ClockTimeDto stampInOrOut() {
