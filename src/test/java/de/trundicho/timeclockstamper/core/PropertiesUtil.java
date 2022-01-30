@@ -7,7 +7,7 @@ import java.util.Properties;
 
 public class PropertiesUtil {
     private static final String APPLICATION_PROPERTIES = "application.properties";
-    private static Properties properties;
+    private static final Properties properties;
 
     static {
         properties = new Properties();

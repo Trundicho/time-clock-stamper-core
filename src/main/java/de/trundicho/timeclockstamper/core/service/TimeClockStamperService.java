@@ -9,9 +9,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import de.trundicho.timeclockstamper.core.api.ClockTimeDto;
-import de.trundicho.timeclockstamper.core.api.ClockType;
+import de.trundicho.timeclockstamper.core.adapters.api.ClockType;
 import de.trundicho.timeclockstamper.core.domain.model.ClockTime;
+import de.trundicho.timeclockstamper.core.domain.model.ClockTimeData;
 import de.trundicho.timeclockstamper.core.domain.ports.ClockTimePersistencePort;
 
 import lombok.extern.slf4j.Slf4j;
@@ -28,11 +28,11 @@ public class TimeClockStamperService {
         this.timezone = timeZone;
     }
 
-    public ClockTimeDto stampInOrOut() {
+    public ClockTimeData stampInOrOut() {
         return stamp(clockNow());
     }
 
-    public ClockTimeDto getTimeClockResponse() {
+    public ClockTimeData getTimeClockResponse() {
         List<ClockTime> clockTimes = clockTimePersistencePort.read();
         return createClockTimeResponse(clockTimes, null, null);
     }
@@ -42,10 +42,10 @@ public class TimeClockStamperService {
         return overtimeMonth(clockTimes, year, month);
     }
 
-    private ClockTimeDto createClockTimeResponse(List<ClockTime> clockTimes, Integer year, Integer month) {
+    private ClockTimeData createClockTimeResponse(List<ClockTime> clockTimes, Integer year, Integer month) {
         ClockType clockType = month == null ? ClockType.valueOf(currentStampState(clockTimes)) : null;
         String hoursWorkedToday = month == null ? hoursWorkedToday(clockTimes) : null;
-        return new ClockTimeDto(clockType, hoursWorkedToday, overtimeMonth(clockTimes, year, month), getClocksAndPausesOn(today()));
+        return new ClockTimeData(clockType, hoursWorkedToday, overtimeMonth(clockTimes, year, month), getClocksAndPausesOn(today()));
     }
 
     private String currentStampState(List<ClockTime> clockTimes) {
@@ -167,7 +167,7 @@ public class TimeClockStamperService {
         return clockTimePersistencePort.read().stream().filter(c -> c.getDate().isAfter(day)).collect(Collectors.toList());
     }
 
-    public ClockTimeDto stamp(LocalTime time) {
+    public ClockTimeData stamp(LocalTime time) {
         ClockTime clockTime = clockNow();
         LocalDateTime date = clockTime.getDate();
         LocalDateTime of = LocalDateTime.of(date.getYear(), date.getMonth(), date.getDayOfMonth(), time.getHour(), time.getMinute(),
@@ -175,14 +175,14 @@ public class TimeClockStamperService {
         return stamp(new ClockTime().setDate(of));
     }
 
-    private ClockTimeDto stamp(ClockTime clockTime) {
+    private ClockTimeData stamp(ClockTime clockTime) {
         List<ClockTime> clockTimeDb = new ArrayList<>(clockTimePersistencePort.read());
         clockTimeDb.add(clockTime);
         clockTimePersistencePort.write(clockTimeDb);
         return createClockTimeResponse(clockTimeDb, null, null);
     }
 
-    private ClockTimeDto stampOrOverride(List<ClockTime> clockTimesToSave, int year, int month, int day) {
+    private ClockTimeData stampOrOverride(List<ClockTime> clockTimesToSave, int year, int month, int day) {
         List<ClockTime> clockTimeDb = new ArrayList<>(clockTimePersistencePort.read());
         List<ClockTime> clockTimes = clockTimeDb.stream()
                                                 .filter(c -> !(c.getDate().getYear() == year && c.getDate().getMonthValue() == month
@@ -196,8 +196,8 @@ public class TimeClockStamperService {
         return createClockTimeResponse(clockTimes, null, null);
     }
 
-    public ClockTimeDto setToday(ClockTimeDto clockTimeDto) {
+    public ClockTimeData setToday(ClockTimeData clockTimeData) {
         LocalDateTime today = LocalDateTime.now(ZoneId.of(timezone));
-        return stampOrOverride(clockTimeDto.getClockTimes(), today.getYear(), today.getMonthValue(), today.getDayOfMonth());
+        return stampOrOverride(clockTimeData.getClockTimes(), today.getYear(), today.getMonthValue(), today.getDayOfMonth());
     }
 }

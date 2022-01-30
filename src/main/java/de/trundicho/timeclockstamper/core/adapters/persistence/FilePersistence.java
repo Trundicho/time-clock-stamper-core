@@ -1,4 +1,4 @@
-package de.trundicho.timeclockstamper.core.adatpers.persistence;
+package de.trundicho.timeclockstamper.core.adapters.persistence;
 
 import java.io.File;
 import java.io.IOException;

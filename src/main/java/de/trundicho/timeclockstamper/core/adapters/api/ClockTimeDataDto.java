@@ -1,4 +1,4 @@
-package de.trundicho.timeclockstamper.core.api;
+package de.trundicho.timeclockstamper.core.adapters.api;
 
 import java.util.List;
 
@@ -13,10 +13,10 @@ import lombok.experimental.Accessors;
 @ToString
 @Accessors(chain = true)
 @AllArgsConstructor
-public class ClockTimeDto {
+public class ClockTimeDataDto {
 
     private final ClockType currentState;
     private final String hoursWorkedToday;
     private final String overtimeMonth;
-    private final List<ClockTime> clockTimes;
+    private final List<ClockTimeDto> clockTimes;
 }

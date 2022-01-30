@@ -9,11 +9,11 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import de.trundicho.timeclockstamper.core.adatpers.persistence.FilePersistence;
-import de.trundicho.timeclockstamper.core.api.ClockTimeDto;
-import de.trundicho.timeclockstamper.core.api.ClockType;
+import de.trundicho.timeclockstamper.core.adapters.api.TimeClockStamperApi;
+import de.trundicho.timeclockstamper.core.adapters.persistence.FilePersistence;
+import de.trundicho.timeclockstamper.core.adapters.api.ClockTimeDataDto;
+import de.trundicho.timeclockstamper.core.adapters.api.ClockType;
 import de.trundicho.timeclockstamper.core.domain.model.ClockTime;
-import de.trundicho.timeclockstamper.core.service.TimeClockStamperService;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
@@ -24,7 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class TimeClockStamperServiceTest {
 
     private final String persistenceFile = PropertiesUtil.getString("persistence.file");
-    TimeClockStamperService timeClockStamperService = new TimeClockStamperService(PropertiesUtil.getString("time.zone"),
+    TimeClockStamperApi timeClockStamperService = new TimeClockStamperApi(PropertiesUtil.getString("time.zone"),
             new FilePersistence(PropertiesUtil.getString("persistence.folder"),
                     PropertiesUtil.getString("persistence.file"),
                     PropertiesUtil.getString("time.zone")));
@@ -50,7 +50,7 @@ class TimeClockStamperServiceTest {
         ClockTime stamp2 = createClockTime(now, 17, 0);
         ClockTime stamp3 = createClockTime(now, 17, 0).setPause(30);
         objectMapper.writeValue(new File(createFileName()), List.of(stamp1, stamp2, stamp3));
-        ClockTimeDto clockTimeDto = timeClockStamperService.getTimeClockResponse();
+        ClockTimeDataDto clockTimeDto = timeClockStamperService.getTimeClockResponse();
         assertThat(clockTimeDto.getHoursWorkedToday()).isEqualTo("7h 30m. Left to 8 hours: 0h 30m");
     }
 
@@ -62,7 +62,7 @@ class TimeClockStamperServiceTest {
         ClockTime stamp3 = createClockTime(now, 13, 0);
         ClockTime stamp4 = createClockTime(now, 17, 0);
         objectMapper.writeValue(new File(createFileName()), List.of(stamp1, stamp2, stamp3, stamp4));
-        ClockTimeDto clockTimeDto = timeClockStamperService.getTimeClockResponse();
+        ClockTimeDataDto clockTimeDto = timeClockStamperService.getTimeClockResponse();
         assertThat(clockTimeDto.getHoursWorkedToday()).isEqualTo("7h 0m. Left to 8 hours: 1h 0m");
     }
 
