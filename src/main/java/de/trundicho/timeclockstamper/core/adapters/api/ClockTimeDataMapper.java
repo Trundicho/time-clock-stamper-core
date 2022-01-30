@@ -9,8 +9,10 @@ import de.trundicho.timeclockstamper.core.domain.model.ClockTimeData;
 class ClockTimeDataMapper {
 
     public ClockTimeDataDto dataToDto(ClockTimeData source) {
-        return new ClockTimeDataDto(source.getCurrentState(), source.getHoursWorkedToday(), source.getOvertimeMonth(),
-                mapClockTimesToData(source));
+        return new ClockTimeDataDto().setCurrentState(source.getCurrentState())
+                                     .setHoursWorkedToday(source.getHoursWorkedToday())
+                                     .setOvertimeMonth(source.getOvertimeMonth())
+                                     .setClockTimes(mapClockTimesToData(source));
     }
 
     public ClockTimeData dtoToData(ClockTimeDataDto source) {
