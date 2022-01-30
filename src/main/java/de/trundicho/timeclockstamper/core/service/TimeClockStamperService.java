@@ -45,7 +45,9 @@ public class TimeClockStamperService {
     private ClockTimeData createClockTimeResponse(List<ClockTime> clockTimes, Integer year, Integer month) {
         ClockType clockType = month == null ? ClockType.valueOf(currentStampState(clockTimes)) : null;
         String hoursWorkedToday = month == null ? hoursWorkedToday(clockTimes) : null;
-        return new ClockTimeData(clockType, hoursWorkedToday, overtimeMonth(clockTimes, year, month), getClocksAndPausesOn(today()));
+        return new ClockTimeData().setCurrentState(clockType).setHoursWorkedToday(hoursWorkedToday).setOvertimeMonth(overtimeMonth(clockTimes, year,
+                month)).setClockTimes(
+                getClocksAndPausesOn(today()));
     }
 
     private String currentStampState(List<ClockTime> clockTimes) {

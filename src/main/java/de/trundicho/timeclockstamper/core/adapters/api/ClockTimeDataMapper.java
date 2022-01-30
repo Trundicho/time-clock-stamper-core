@@ -14,7 +14,10 @@ class ClockTimeDataMapper {
     }
 
     public ClockTimeData dtoToData(ClockTimeDataDto source) {
-        return new ClockTimeData(source.getCurrentState(), source.getHoursWorkedToday(), source.getOvertimeMonth(), mapClockTimes(source));
+        return new ClockTimeData().setCurrentState(source.getCurrentState())
+                                  .setHoursWorkedToday(source.getHoursWorkedToday())
+                                  .setOvertimeMonth(source.getOvertimeMonth())
+                                  .setClockTimes(mapClockTimes(source));
     }
 
     private List<ClockTimeDto> mapClockTimesToData(ClockTimeData source) {
