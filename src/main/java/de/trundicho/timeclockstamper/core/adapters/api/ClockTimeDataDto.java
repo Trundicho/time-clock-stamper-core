@@ -11,7 +11,7 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class ClockTimeDataDto {
 
-    private ClockType currentState;
+    private ClockTypeDto currentState;
     private String hoursWorkedToday;
     private String overtimeMonth;
     private List<ClockTimeDto> clockTimes;

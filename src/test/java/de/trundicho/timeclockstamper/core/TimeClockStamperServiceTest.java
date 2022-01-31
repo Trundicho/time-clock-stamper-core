@@ -9,10 +9,11 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import de.trundicho.timeclockstamper.core.adapters.api.TimeClockStamperApi;
+import de.trundicho.timeclockstamper.core.adapters.api.ClockTypeDto;
+import de.trundicho.timeclockstamper.core.adapters.api.TimeClockStamperApiImpl;
 import de.trundicho.timeclockstamper.core.adapters.persistence.FilePersistence;
 import de.trundicho.timeclockstamper.core.adapters.api.ClockTimeDataDto;
-import de.trundicho.timeclockstamper.core.adapters.api.ClockType;
+import de.trundicho.timeclockstamper.core.domain.model.ClockType;
 import de.trundicho.timeclockstamper.core.domain.model.ClockTime;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -24,7 +25,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class TimeClockStamperServiceTest {
 
     private final String persistenceFile = PropertiesUtil.getString("persistence.file");
-    TimeClockStamperApi timeClockStamperService = new TimeClockStamperApi(PropertiesUtil.getString("time.zone"),
+    TimeClockStamperApiImpl timeClockStamperService = new TimeClockStamperApiImpl(PropertiesUtil.getString("time.zone"),
             new FilePersistence(PropertiesUtil.getString("persistence.folder"),
                     PropertiesUtil.getString("persistence.file"),
                     PropertiesUtil.getString("time.zone")));
@@ -37,10 +38,10 @@ class TimeClockStamperServiceTest {
 
     @Test
     void whenClockingInOrOut_thenStateChanges() {
-        assertThat(timeClockStamperService.getTimeClockResponse().getCurrentState()).isEqualTo(ClockType.CLOCK_OUT);
-        assertThat(timeClockStamperService.stampInOrOut().getCurrentState()).isEqualTo(ClockType.CLOCK_IN);
-        assertThat(timeClockStamperService.stampInOrOut().getCurrentState()).isEqualTo(ClockType.CLOCK_OUT);
-        assertThat(timeClockStamperService.stampInOrOut().getCurrentState()).isEqualTo(ClockType.CLOCK_IN);
+        assertThat(timeClockStamperService.getTimeClockResponse().getCurrentState()).isEqualTo(ClockTypeDto.CLOCK_OUT);
+        assertThat(timeClockStamperService.stampInOrOut().getCurrentState()).isEqualTo(ClockTypeDto.CLOCK_IN);
+        assertThat(timeClockStamperService.stampInOrOut().getCurrentState()).isEqualTo(ClockTypeDto.CLOCK_OUT);
+        assertThat(timeClockStamperService.stampInOrOut().getCurrentState()).isEqualTo(ClockTypeDto.CLOCK_IN);
     }
 
     @Test

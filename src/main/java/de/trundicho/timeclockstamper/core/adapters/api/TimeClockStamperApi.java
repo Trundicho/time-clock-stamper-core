@@ -2,37 +2,15 @@ package de.trundicho.timeclockstamper.core.adapters.api;
 
 import java.time.LocalTime;
 
-import de.trundicho.timeclockstamper.core.domain.ports.ClockTimePersistencePort;
-import de.trundicho.timeclockstamper.core.service.TimeClockStamperService;
+public interface TimeClockStamperApi {
 
-public class TimeClockStamperApi {
+    ClockTimeDataDto stampInOrOut();
 
-    private final TimeClockStamperService timeClockStamperService;
-    private final ClockTimeDataMapper mapper;
+    ClockTimeDataDto getTimeClockResponse();
 
-    public TimeClockStamperApi(String timeZone, ClockTimePersistencePort clockTimePersistencePort) {
-        timeClockStamperService = new TimeClockStamperService(timeZone, clockTimePersistencePort);
-        mapper = new ClockTimeDataMapper();
-    }
+    String getOvertimeMonth(Integer year, Integer month);
 
-    public ClockTimeDataDto stampInOrOut() {
-        return mapper.dataToDto(timeClockStamperService.stampInOrOut());
-    }
+    ClockTimeDataDto stamp(LocalTime time);
 
-    public ClockTimeDataDto getTimeClockResponse() {
-        return mapper.dataToDto(timeClockStamperService.getTimeClockResponse());
-    }
-
-    public String getOvertimeMonth(Integer year, Integer month) {
-        return timeClockStamperService.getOvertimeMonth(year, month);
-    }
-
-    public ClockTimeDataDto stamp(LocalTime time) {
-        return mapper.dataToDto(timeClockStamperService.stamp(time));
-    }
-
-    public ClockTimeDataDto setToday(ClockTimeDataDto clockTimeDto) {
-        return mapper.dataToDto(timeClockStamperService.setToday(mapper.dtoToData(clockTimeDto)));
-    }
-
+    ClockTimeDataDto setToday(ClockTimeDataDto clockTimeDto);
 }

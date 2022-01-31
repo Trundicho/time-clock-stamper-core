@@ -1,5 +1,6 @@
 package de.trundicho.timeclockstamper.core.adapters.api;
 
-public enum ClockType {
-    CLOCK_IN, CLOCK_OUT
+public enum ClockTypeDto {
+    CLOCK_IN,
+    CLOCK_OUT
 }

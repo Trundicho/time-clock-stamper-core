@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import de.trundicho.timeclockstamper.core.adapters.api.ClockType;
+import de.trundicho.timeclockstamper.core.domain.model.ClockType;
 import de.trundicho.timeclockstamper.core.domain.model.ClockTime;
 import de.trundicho.timeclockstamper.core.domain.model.ClockTimeData;
 import de.trundicho.timeclockstamper.core.domain.ports.ClockTimePersistencePort;
