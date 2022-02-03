@@ -1,4 +1,4 @@
-package de.trundicho.timeclockstamper.core.domain.ports;
+package de.trundicho.timeclockstamper.core.service;
 
 import java.util.List;
 

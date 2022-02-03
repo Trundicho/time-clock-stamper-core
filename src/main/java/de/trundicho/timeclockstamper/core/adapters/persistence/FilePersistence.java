@@ -10,7 +10,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import de.trundicho.timeclockstamper.core.domain.model.ClockTime;
-import de.trundicho.timeclockstamper.core.domain.ports.ClockTimePersistencePort;
+import de.trundicho.timeclockstamper.core.service.ClockTimePersistencePort;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;

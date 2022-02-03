@@ -7,7 +7,7 @@ import org.mapstruct.factory.Mappers;
 
 import de.trundicho.timeclockstamper.core.domain.model.ClockTime;
 import de.trundicho.timeclockstamper.core.domain.model.ClockTimeData;
-import de.trundicho.timeclockstamper.core.domain.ports.ClockTimePersistencePort;
+import de.trundicho.timeclockstamper.core.service.ClockTimePersistencePort;
 import de.trundicho.timeclockstamper.core.service.TimeClockStamperService;
 
 public class TimeClockStamperApiImpl implements TimeClockStamperApi {

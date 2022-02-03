@@ -9,11 +9,10 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import de.trundicho.timeclockstamper.core.adapters.api.ClockTimeDataDto;
 import de.trundicho.timeclockstamper.core.adapters.api.ClockTypeDto;
 import de.trundicho.timeclockstamper.core.adapters.api.TimeClockStamperApiImpl;
 import de.trundicho.timeclockstamper.core.adapters.persistence.FilePersistence;
-import de.trundicho.timeclockstamper.core.adapters.api.ClockTimeDataDto;
-import de.trundicho.timeclockstamper.core.domain.model.ClockType;
 import de.trundicho.timeclockstamper.core.domain.model.ClockTime;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -26,8 +25,7 @@ class TimeClockStamperServiceTest {
 
     private final String persistenceFile = PropertiesUtil.getString("persistence.file");
     TimeClockStamperApiImpl timeClockStamperService = new TimeClockStamperApiImpl(PropertiesUtil.getString("time.zone"),
-            new FilePersistence(PropertiesUtil.getString("persistence.folder"),
-                    PropertiesUtil.getString("persistence.file"),
+            new FilePersistence(PropertiesUtil.getString("persistence.folder"), PropertiesUtil.getString("persistence.file"),
                     PropertiesUtil.getString("time.zone")));
     ObjectMapper objectMapper = JsonMapper.builder().addModule(new JavaTimeModule()).build();
 

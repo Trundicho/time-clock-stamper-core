@@ -9,10 +9,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import de.trundicho.timeclockstamper.core.domain.model.ClockType;
 import de.trundicho.timeclockstamper.core.domain.model.ClockTime;
 import de.trundicho.timeclockstamper.core.domain.model.ClockTimeData;
-import de.trundicho.timeclockstamper.core.domain.ports.ClockTimePersistencePort;
+import de.trundicho.timeclockstamper.core.domain.model.ClockType;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -45,9 +44,10 @@ public class TimeClockStamperService {
     private ClockTimeData createClockTimeResponse(List<ClockTime> clockTimes, Integer year, Integer month) {
         ClockType clockType = month == null ? ClockType.valueOf(currentStampState(clockTimes)) : null;
         String hoursWorkedToday = month == null ? hoursWorkedToday(clockTimes) : null;
-        return new ClockTimeData().setCurrentState(clockType).setHoursWorkedToday(hoursWorkedToday).setOvertimeMonth(overtimeMonth(clockTimes, year,
-                month)).setClockTimes(
-                getClocksAndPausesOn(today()));
+        return new ClockTimeData().setCurrentState(clockType)
+                                  .setHoursWorkedToday(hoursWorkedToday)
+                                  .setOvertimeMonth(overtimeMonth(clockTimes, year, month))
+                                  .setClockTimes(getClocksAndPausesOn(today()));
     }
 
     private String currentStampState(List<ClockTime> clockTimes) {
