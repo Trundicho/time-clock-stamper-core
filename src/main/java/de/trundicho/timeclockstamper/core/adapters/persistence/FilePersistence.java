@@ -72,7 +72,7 @@ public class FilePersistence implements ClockTimePersistencePort {
                 }));
             }
 
-        } catch (IOException e) {
+        } catch (NullPointerException | IOException e) {
             log.error("Can not read from file " + e.getMessage());
         }
         return clockTimes;
