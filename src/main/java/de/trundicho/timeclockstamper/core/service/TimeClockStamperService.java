@@ -46,7 +46,7 @@ public class TimeClockStamperService {
     }
 
     private ClockTimeData createClockTimeResponse(List<ClockTime> clockTimes, Integer year, Integer month, Integer day) {
-        ClockType clockType = month == null ? ClockType.valueOf(currentStampState(clockTimes)) : null;
+        ClockType clockType = ClockType.valueOf(currentStampState(clockTimes));
         String hoursWorkedToday = hoursWorkedToday(clockTimes, year, month, day);
         return new ClockTimeData().setCurrentState(clockType)
                                   .setHoursWorkedToday(hoursWorkedToday)
