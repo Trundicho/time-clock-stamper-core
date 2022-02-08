@@ -8,5 +8,5 @@ public interface ClockTimePersistencePort {
 
     void write(List<ClockTime> clockTimes, Integer year, Integer month);
 
-    List<ClockTime> read();
+    List<ClockTime> read(Integer year, Integer month);
 }

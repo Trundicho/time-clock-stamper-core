@@ -32,12 +32,12 @@ public class TimeClockStamperService {
     }
 
     public ClockTimeData getTimeClockResponse() {
-        List<ClockTime> clockTimes = clockTimePersistencePort.read();
+        List<ClockTime> clockTimes = clockTimePersistencePort.read(null, null);
         return createClockTimeResponse(clockTimes, null, null);
     }
 
     public String getOvertimeMonth(Integer year, Integer month) {
-        List<ClockTime> clockTimes = clockTimePersistencePort.read();
+        List<ClockTime> clockTimes = clockTimePersistencePort.read(year, month);
         return overtimeMonth(clockTimes, year, month);
     }
 
@@ -174,7 +174,7 @@ public class TimeClockStamperService {
     }
 
     private List<ClockTime> getClocksAndPausesOn(LocalDateTime day) {
-        return clockTimePersistencePort.read().stream().filter(c -> c.getDate().isAfter(day)).collect(Collectors.toList());
+        return clockTimePersistencePort.read(day.getYear(), day.getMonthValue()).stream().filter(c -> c.getDate().isAfter(day)).collect(Collectors.toList());
     }
 
     public ClockTimeData stamp(LocalTime time) {
@@ -186,14 +186,17 @@ public class TimeClockStamperService {
     }
 
     private ClockTimeData stamp(ClockTime clockTime) {
-        List<ClockTime> clockTimeDb = new ArrayList<>(clockTimePersistencePort.read());
+        LocalDateTime localDateTime = localDate(null, null, null);
+        int year = localDateTime.getYear();
+        int month = localDateTime.getMonthValue();
+        List<ClockTime> clockTimeDb = new ArrayList<>(clockTimePersistencePort.read(year, month));
         clockTimeDb.add(clockTime);
-        clockTimePersistencePort.write(clockTimeDb, null, null);
-        return createClockTimeResponse(clockTimeDb, null, null);
+        clockTimePersistencePort.write(clockTimeDb, year, month);
+        return createClockTimeResponse(clockTimeDb, year, month);
     }
 
     private ClockTimeData stampByOverrideDay(List<ClockTime> clockTimesToSave, int year, int month, int day) {
-        List<ClockTime> clockTimeDb = new ArrayList<>(clockTimePersistencePort.read());
+        List<ClockTime> clockTimeDb = new ArrayList<>(clockTimePersistencePort.read(year, month));
         List<ClockTime> clockTimes = clockTimeDb.stream()
                                                 .filter(c -> !(c.getDate().getYear() == year && c.getDate().getMonthValue() == month
                                                         && c.getDate().getDayOfMonth() == day))
@@ -215,8 +218,8 @@ public class TimeClockStamperService {
         return stampByOverrideDay(clockTimeData.getClockTimes(), year, month, day);
     }
 
-    public ClockTimeData getDay(Integer year, Integer month, Integer day) {
-        List<ClockTime> clockTimes = clockTimePersistencePort.read();
+    public ClockTimeData getDay(int year, int month, int day) {
+        List<ClockTime> clockTimes = clockTimePersistencePort.read(year, month);
         return createClockTimeResponse(clockTimes, year, month, day);
     }
 }

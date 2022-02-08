@@ -30,9 +30,7 @@ public class FilePersistence implements ClockTimePersistencePort {
         this.persistenceFile = persistenceFile;
         this.persistenceFolder = persistenceFolder;
         this.timezone = timeZone;
-        this.objectMapper = JsonMapper.builder()
-                                        .addModule(new JavaTimeModule())
-                                        .build();
+        this.objectMapper = JsonMapper.builder().addModule(new JavaTimeModule()).build();
     }
 
     public void write(List<ClockTime> clockTimes, Integer year, Integer month) {
@@ -52,29 +50,30 @@ public class FilePersistence implements ClockTimePersistencePort {
     private String createFileName(Integer year, Integer month) {
         LocalDateTime currentDate = localDate(year, month);
         int currentMonth = currentDate.getMonthValue();
-        String m = currentMonth < 10 ? "0" + currentMonth : "" + currentMonth;
+        String m = prependZero(currentMonth);
         int currentYear = currentDate.getYear();
         return persistenceFolder + currentYear + "-" + m + "-" + persistenceFile;
     }
 
+    private String prependZero(int currentMonth) {
+        return currentMonth < 10 ? "0" + currentMonth : "" + currentMonth;
+    }
+
     private LocalDateTime localDate(Integer year, Integer month) {
         LocalDateTime now = getLocalDateTime();
-        return LocalDateTime.of(
-                year == null ? now.getYear() : year,
-                month == null ? now.getMonth().getValue() : month,
-                1,
-                0, 0);
+        return LocalDateTime.of(year == null ? now.getYear() : year, month == null ? now.getMonth().getValue() : month, 1, 0, 0);
     }
 
     private LocalDateTime getLocalDateTime() {
         return LocalDateTime.now(ZoneId.of(timezone));
     }
 
-    public List<ClockTime> read() {
+    public List<ClockTime> read(Integer year, Integer month) {
         List<ClockTime> clockTimes = new ArrayList<>();
         try {
             File folder = new File(persistenceFolder);
-            File[] files = folder.listFiles(pathname -> pathname.toString().endsWith(persistenceFile));
+            String fileToFilter = getFileToFilter(year, month);
+            File[] files = folder.listFiles(pathname -> pathname.toString().endsWith(fileToFilter));
             for (File file : Objects.requireNonNull(files)) {
                 clockTimes.addAll(objectMapper.readValue(file, new TypeReference<>() {
 
@@ -85,5 +84,13 @@ public class FilePersistence implements ClockTimePersistencePort {
             log.error("Can not read from file " + e.getMessage());
         }
         return clockTimes;
+    }
+
+    private String getFileToFilter(Integer year, Integer month) {
+        String fileToFilter = persistenceFile;
+        if (year == null && month == null) {
+            fileToFilter = createFileName(year, month);
+        }
+        return fileToFilter;
     }
 }
