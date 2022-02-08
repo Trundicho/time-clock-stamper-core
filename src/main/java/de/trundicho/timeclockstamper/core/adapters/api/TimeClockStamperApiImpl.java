@@ -56,4 +56,14 @@ public class TimeClockStamperApiImpl implements TimeClockStamperApi {
         return mapper.dataToDto(timeClockStamperService.setToday(mapper.dtoToData(clockTimeDto)));
     }
 
+    @Override
+    public ClockTimeDataDto setDay(ClockTimeDataDto clockTimeDto, Integer year, Integer month, Integer day) {
+        return mapper.dataToDto(timeClockStamperService.setDay(mapper.dtoToData(clockTimeDto), year, month, day));
+    }
+
+    @Override
+    public ClockTimeDataDto getDay(Integer year, Integer month, Integer day) {
+        return mapper.dataToDto(timeClockStamperService.getDay(year, month, day));
+    }
+
 }

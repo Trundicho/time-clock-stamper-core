@@ -35,29 +35,38 @@ public class FilePersistence implements ClockTimePersistencePort {
                                         .build();
     }
 
-    public void write(List<ClockTime> clockTimes) {
-        LocalDateTime currentDate = getCurrentDate();
+    public void write(List<ClockTime> clockTimes, Integer year, Integer month) {
+        LocalDateTime localDate = localDate(year, month);
         List<ClockTime> clockTimesOfCurrentMonth = clockTimes.stream()
-                                                             .filter(c -> currentDate.getMonth().equals(c.getDate().getMonth())
-                                                                     && currentDate.getYear() == c.getDate().getYear())
+                                                             .filter(c -> localDate.getMonth().equals(c.getDate().getMonth())
+                                                                     && localDate.getYear() == c.getDate().getYear())
                                                              .sorted()
                                                              .collect(Collectors.toList());
         try {
-            objectMapper.writerWithDefaultPrettyPrinter().writeValue(new File(createFileName()), clockTimesOfCurrentMonth);
+            objectMapper.writerWithDefaultPrettyPrinter().writeValue(new File(createFileName(year, month)), clockTimesOfCurrentMonth);
         } catch (IOException e) {
             log.error("Can not write to file " + e.getMessage());
         }
     }
 
-    private String createFileName() {
-        LocalDateTime currentDate = getCurrentDate();
+    private String createFileName(Integer year, Integer month) {
+        LocalDateTime currentDate = localDate(year, month);
         int currentMonth = currentDate.getMonthValue();
-        String month = currentMonth < 10 ? "0" + currentMonth : "" + currentMonth;
+        String m = currentMonth < 10 ? "0" + currentMonth : "" + currentMonth;
         int currentYear = currentDate.getYear();
-        return persistenceFolder + currentYear + "-" + month + "-" + persistenceFile;
+        return persistenceFolder + currentYear + "-" + m + "-" + persistenceFile;
     }
 
-    private LocalDateTime getCurrentDate() {
+    private LocalDateTime localDate(Integer year, Integer month) {
+        LocalDateTime now = getLocalDateTime();
+        return LocalDateTime.of(
+                year == null ? now.getYear() : year,
+                month == null ? now.getMonth().getValue() : month,
+                1,
+                0, 0);
+    }
+
+    private LocalDateTime getLocalDateTime() {
         return LocalDateTime.now(ZoneId.of(timezone));
     }
 

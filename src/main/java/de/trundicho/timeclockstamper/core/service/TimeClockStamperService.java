@@ -42,20 +42,24 @@ public class TimeClockStamperService {
     }
 
     private ClockTimeData createClockTimeResponse(List<ClockTime> clockTimes, Integer year, Integer month) {
+        return createClockTimeResponse(clockTimes, year, month, localDate(year, month, null).getDayOfMonth());
+    }
+
+    private ClockTimeData createClockTimeResponse(List<ClockTime> clockTimes, Integer year, Integer month, Integer day) {
         ClockType clockType = month == null ? ClockType.valueOf(currentStampState(clockTimes)) : null;
-        String hoursWorkedToday = month == null ? hoursWorkedToday(clockTimes) : null;
+        String hoursWorkedToday = hoursWorkedToday(clockTimes, year, month, day);
         return new ClockTimeData().setCurrentState(clockType)
                                   .setHoursWorkedToday(hoursWorkedToday)
                                   .setOvertimeMonth(overtimeMonth(clockTimes, year, month))
-                                  .setClockTimes(getClocksAndPausesOn(today()));
+                                  .setClockTimes(getClocksAndPausesOn(localDate(year,month, day)));
     }
 
     private String currentStampState(List<ClockTime> clockTimes) {
         return getCurrentClockType(clockTimes).toString();
     }
 
-    private String hoursWorkedToday(List<ClockTime> clockTimes) {
-        List<ClockTime> todayClockTimes = getClocksAndPausesOn(today());
+    private String hoursWorkedToday(List<ClockTime> clockTimes, Integer year, Integer month, Integer day) {
+        List<ClockTime> todayClockTimes = getClocksAndPausesOn(localDate(year, month, day));
         int overallWorkedMinutes = 0;
         if (getCurrentClockType(clockTimes) == ClockType.CLOCK_IN) {
             //add fake clockOut
@@ -160,9 +164,13 @@ public class TimeClockStamperService {
         return hour * 60 + minute;
     }
 
-    private LocalDateTime today() {
+    private LocalDateTime localDate(Integer year, Integer month, Integer day) {
         LocalDateTime now = getLocalDateTime();
-        return LocalDateTime.of(now.getYear(), now.getMonth(), now.getDayOfMonth(), 0, 0);
+        return LocalDateTime.of(
+                year == null ? now.getYear() : year,
+                month == null ? now.getMonth().getValue() : month,
+                day == null ? now.getDayOfMonth() : day,
+                0, 0);
     }
 
     private List<ClockTime> getClocksAndPausesOn(LocalDateTime day) {
@@ -180,11 +188,11 @@ public class TimeClockStamperService {
     private ClockTimeData stamp(ClockTime clockTime) {
         List<ClockTime> clockTimeDb = new ArrayList<>(clockTimePersistencePort.read());
         clockTimeDb.add(clockTime);
-        clockTimePersistencePort.write(clockTimeDb);
+        clockTimePersistencePort.write(clockTimeDb, null, null);
         return createClockTimeResponse(clockTimeDb, null, null);
     }
 
-    private ClockTimeData stampOrOverride(List<ClockTime> clockTimesToSave, int year, int month, int day) {
+    private ClockTimeData stampByOverrideDay(List<ClockTime> clockTimesToSave, int year, int month, int day) {
         List<ClockTime> clockTimeDb = new ArrayList<>(clockTimePersistencePort.read());
         List<ClockTime> clockTimes = clockTimeDb.stream()
                                                 .filter(c -> !(c.getDate().getYear() == year && c.getDate().getMonthValue() == month
@@ -194,12 +202,21 @@ public class TimeClockStamperService {
                                           .filter(c -> c.getDate().getYear() == year && c.getDate().getMonthValue() == month
                                                   && c.getDate().getDayOfMonth() == day)
                                           .collect(Collectors.toList()));
-        clockTimePersistencePort.write(clockTimes);
-        return createClockTimeResponse(clockTimes, null, null);
+        clockTimePersistencePort.write(clockTimes, year, month);
+        return createClockTimeResponse(clockTimes, year, month, day);
     }
 
     public ClockTimeData setToday(ClockTimeData clockTimeData) {
         LocalDateTime today = LocalDateTime.now(ZoneId.of(timezone));
-        return stampOrOverride(clockTimeData.getClockTimes(), today.getYear(), today.getMonthValue(), today.getDayOfMonth());
+        return stampByOverrideDay(clockTimeData.getClockTimes(), today.getYear(), today.getMonthValue(), today.getDayOfMonth());
+    }
+
+    public ClockTimeData setDay(ClockTimeData clockTimeData, int year, int month, int day) {
+        return stampByOverrideDay(clockTimeData.getClockTimes(), year, month, day);
+    }
+
+    public ClockTimeData getDay(Integer year, Integer month, Integer day) {
+        List<ClockTime> clockTimes = clockTimePersistencePort.read();
+        return createClockTimeResponse(clockTimes, year, month, day);
     }
 }

@@ -13,4 +13,8 @@ public interface TimeClockStamperApi {
     ClockTimeDataDto stamp(LocalTime time);
 
     ClockTimeDataDto setToday(ClockTimeDataDto clockTimeDto);
+
+    ClockTimeDataDto setDay(ClockTimeDataDto clockTimeDto, Integer year, Integer month, Integer day);
+
+    ClockTimeDataDto getDay(Integer year, Integer month, Integer day);
 }
