@@ -42,7 +42,8 @@ public class TimeClockStamperService {
     }
 
     private ClockTimeData createClockTimeResponse(List<ClockTime> clockTimes, Integer year, Integer month) {
-        return createClockTimeResponse(clockTimes, year, month, localDate(year, month, null).getDayOfMonth());
+        LocalDateTime localDateTime = localDate(year, month, null);
+        return createClockTimeResponse(clockTimes, localDateTime.getYear(), localDateTime.getMonthValue(), localDateTime.getDayOfMonth());
     }
 
     private ClockTimeData createClockTimeResponse(List<ClockTime> clockTimes, Integer year, Integer month, Integer day) {
