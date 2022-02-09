@@ -46,11 +46,21 @@ public class TimeClockStamperService {
     }
 
     private ClockTimeData createClockTimeResponse(List<ClockTime> clockTimes, Integer year, Integer month, Integer day) {
-        ClockType clockType = ClockType.valueOf(currentStampState(clockTimes));
-        String hoursWorkedToday = hoursWorkedToday(clockTimes, year, month, day);
+        List<ClockTime> filteredPerDay = clockTimes.stream()
+                                            .filter(c -> (year == null || c.getDate().getYear() == year) && (month == null ||
+                                                    c.getDate().getMonthValue() == month) && (day == null ||
+                                                    c.getDate().getDayOfMonth() == day))
+                                            .collect(Collectors.toList());
+        List<ClockTime> filteredPerMonth = clockTimes.stream()
+                                            .filter(c -> (year == null || c.getDate().getYear() == year) && (month == null ||
+                                                    c.getDate().getMonthValue() == month))
+                                            .collect(Collectors.toList());
+        ClockType clockType =
+                ClockType.valueOf(currentStampState(filteredPerDay));
+        String hoursWorkedToday = hoursWorkedToday(filteredPerDay, year, month, day);
         return new ClockTimeData().setCurrentState(clockType)
                                   .setHoursWorkedToday(hoursWorkedToday)
-                                  .setOvertimeMonth(overtimeMonth(clockTimes, year, month))
+                                  .setOvertimeMonth(overtimeMonth(filteredPerMonth, year, month))
                                   .setClockTimes(getClocksAndPausesOn(localDate(year,month, day)));
     }
 
