@@ -70,13 +70,14 @@ public class TimeClockStamperService {
     }
 
     private String hoursWorkedToday(List<ClockTime> todayClockTimes) {
+        List<ClockTime> today = new ArrayList<>(todayClockTimes);
         int overallWorkedMinutes = 0;
-        if (getCurrentClockType(todayClockTimes) == ClockType.CLOCK_IN) {
+        if (getCurrentClockType(today) == ClockType.CLOCK_IN) {
             //add fake clockOut
-            todayClockTimes.add(clockNow());
+            today.add(clockNow());
         }
-        if (!todayClockTimes.isEmpty()) {
-            overallWorkedMinutes = getOverallMinutes(todayClockTimes);
+        if (!today.isEmpty()) {
+            overallWorkedMinutes = getOverallMinutes(today);
         }
         return toHoursAndMinutes(overallWorkedMinutes) + ". Left to 8 hours: " + toHoursAndMinutes(
                 EIGHT_HOURS_IN_MINUTES - overallWorkedMinutes);
