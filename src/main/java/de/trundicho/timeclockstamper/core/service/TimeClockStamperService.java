@@ -57,21 +57,20 @@ public class TimeClockStamperService {
                                             .collect(Collectors.toList());
         ClockType clockType =
                 ClockType.valueOf(currentStampState(filteredPerDay));
-        String hoursWorkedToday = hoursWorkedToday(filteredPerDay, year, month, day);
+        String hoursWorkedToday = hoursWorkedToday(filteredPerDay);
         return new ClockTimeData().setCurrentState(clockType)
                                   .setHoursWorkedToday(hoursWorkedToday)
                                   .setOvertimeMonth(overtimeMonth(filteredPerMonth, year, month))
-                                  .setClockTimes(getClocksAndPausesOn(localDate(year,month, day)));
+                                  .setClockTimes(filteredPerDay);
     }
 
     private String currentStampState(List<ClockTime> clockTimes) {
         return getCurrentClockType(clockTimes).toString();
     }
 
-    private String hoursWorkedToday(List<ClockTime> clockTimes, Integer year, Integer month, Integer day) {
-        List<ClockTime> todayClockTimes = getClocksAndPausesOn(localDate(year, month, day));
+    private String hoursWorkedToday(List<ClockTime> todayClockTimes) {
         int overallWorkedMinutes = 0;
-        if (getCurrentClockType(clockTimes) == ClockType.CLOCK_IN) {
+        if (getCurrentClockType(todayClockTimes) == ClockType.CLOCK_IN) {
             //add fake clockOut
             todayClockTimes.add(clockNow());
         }
@@ -181,10 +180,6 @@ public class TimeClockStamperService {
                 month == null ? now.getMonth().getValue() : month,
                 day == null ? now.getDayOfMonth() : day,
                 0, 0);
-    }
-
-    private List<ClockTime> getClocksAndPausesOn(LocalDateTime day) {
-        return clockTimePersistencePort.read(day.getYear(), day.getMonthValue()).stream().filter(c -> c.getDate().isAfter(day)).collect(Collectors.toList());
     }
 
     public ClockTimeData stamp(LocalTime time) {
