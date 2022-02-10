@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import de.trundicho.timeclockstamper.core.domain.model.ClockTime;
@@ -48,17 +49,16 @@ public class TimeClockStamperService {
 
     private ClockTimeData createClockTimeResponse(List<ClockTime> clockTimes, Integer year, Integer month, Integer day) {
         List<ClockTime> filteredPerDay = clockTimes.stream()
-                                            .filter(c -> (year == null || c.getDate().getYear() == year) && (month == null ||
-                                                    c.getDate().getMonthValue() == month) && (day == null ||
-                                                    c.getDate().getDayOfMonth() == day))
-                                            .collect(Collectors.toList());
+                                                   .filter(c -> (year == null || c.getDate().getYear() == year) && (month == null
+                                                           || c.getDate().getMonthValue() == month) && (day == null
+                                                           || c.getDate().getDayOfMonth() == day))
+                                                   .collect(Collectors.toList());
         List<ClockTime> filteredPerMonth = clockTimes.stream()
-                                            .filter(c -> (year == null || c.getDate().getYear() == year) && (month == null ||
-                                                    c.getDate().getMonthValue() == month))
-                                            .collect(Collectors.toList());
-        ClockType clockType =
-                ClockType.valueOf(currentStampState(filteredPerDay));
-        String hoursWorkedToday = hoursWorkedToday(filteredPerDay);
+                                                     .filter(c -> (year == null || c.getDate().getYear() == year) && (month == null
+                                                             || c.getDate().getMonthValue() == month))
+                                                     .collect(Collectors.toList());
+        ClockType clockType = ClockType.valueOf(currentStampState(filteredPerDay));
+        String hoursWorkedToday = hoursWorkedAtDay(filteredPerDay);
         return new ClockTimeData().setCurrentState(clockType)
                                   .setHoursWorkedToday(hoursWorkedToday)
                                   .setOvertimeMonth(overtimeMonth(filteredPerMonth, year, month))
@@ -69,15 +69,24 @@ public class TimeClockStamperService {
         return getCurrentClockType(clockTimes).toString();
     }
 
-    private String hoursWorkedToday(List<ClockTime> todayClockTimes) {
-        List<ClockTime> today = new ArrayList<>(todayClockTimes);
-        int overallWorkedMinutes = 0;
-        if (getCurrentClockType(today) == ClockType.CLOCK_IN) {
-            //add fake clockOut
-            today.add(clockNow());
+    private String hoursWorkedAtDay(List<ClockTime> clockTimesOfADay) {
+        LocalDateTime today = clockNow().getDate();
+        Optional<ClockTime> first = clockTimesOfADay.stream()
+                                                    .filter(c -> c.getDate().getYear() == today.getYear()
+                                                            && c.getDate().getMonthValue() == today.getMonthValue()
+                                                            && c.getDate().getDayOfMonth() == today.getDayOfMonth())
+                                                    .findFirst();
+        if(first.isEmpty() && getCurrentClockType(clockTimesOfADay) == ClockType.CLOCK_IN) {
+            return "Can not compute time worked this day";
         }
-        if (!today.isEmpty()) {
-            overallWorkedMinutes = getOverallMinutes(today);
+        List<ClockTime> day = new ArrayList<>(clockTimesOfADay);
+        int overallWorkedMinutes = 0;
+        if (getCurrentClockType(day) == ClockType.CLOCK_IN) {
+            //add fake clockOut
+            day.add(clockNow());
+        }
+        if (!day.isEmpty()) {
+            overallWorkedMinutes = getOverallMinutes(day);
         }
         return toHoursAndMinutes(overallWorkedMinutes) + ". Left to 8 hours: " + toHoursAndMinutes(
                 EIGHT_HOURS_IN_MINUTES - overallWorkedMinutes);
@@ -177,11 +186,8 @@ public class TimeClockStamperService {
 
     private LocalDateTime localDate(Integer year, Integer month, Integer day) {
         LocalDateTime now = getLocalDateTime();
-        return LocalDateTime.of(
-                year == null ? now.getYear() : year,
-                month == null ? now.getMonth().getValue() : month,
-                day == null ? now.getDayOfMonth() : day,
-                0, 0);
+        return LocalDateTime.of(year == null ? now.getYear() : year, month == null ? now.getMonth().getValue() : month,
+                day == null ? now.getDayOfMonth() : day, 0, 0);
     }
 
     public ClockTimeData stamp(LocalTime time) {
