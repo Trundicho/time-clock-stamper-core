@@ -101,7 +101,7 @@ public class TimeClockStamperService {
             currentMonth = clockNow();
         }
         final int monthInteger = Objects.requireNonNullElseGet(month, () -> currentMonth.getDate().getMonthValue());
-        final int yearInteger = Objects.requireNonNullElseGet(month, () -> currentMonth.getDate().getYear());
+        final int yearInteger = Objects.requireNonNullElseGet(year, () -> currentMonth.getDate().getYear());
         List<ClockTime> allClocksThisMonth = new ArrayList<>(clockTimes).stream()
                                                                         .filter(clockTime ->
                                                                                 clockTime.getDate().getMonthValue() == monthInteger
