@@ -76,7 +76,7 @@ public class TimeClockStamperService {
                                                             && c.getDate().getMonthValue() == today.getMonthValue()
                                                             && c.getDate().getDayOfMonth() == today.getDayOfMonth())
                                                     .findFirst();
-        if(first.isEmpty() && getCurrentClockType(clockTimesOfADay) == ClockType.CLOCK_IN) {
+        if (first.isEmpty() && getCurrentClockType(clockTimesOfADay) == ClockType.CLOCK_IN) {
             return "Can not compute time worked this day";
         }
         List<ClockTime> day = new ArrayList<>(clockTimesOfADay);
@@ -93,23 +93,27 @@ public class TimeClockStamperService {
     }
 
     private String overtimeMonth(List<ClockTime> clockTimes, Integer year, Integer month) {
-        final ClockTime now;
+        final ClockTime currentMonth;
         if (year != null && month != null) {
             LocalDateTime monthDate = LocalDateTime.of(year, month, 1, 0, 0);
-            now = new ClockTime().setDate(monthDate);
+            currentMonth = new ClockTime().setDate(monthDate);
         } else {
-            now = clockNow();
+            currentMonth = clockNow();
         }
-        final int monthInteger = Objects.requireNonNullElseGet(month, () -> now.getDate().getMonthValue());
+        final int monthInteger = Objects.requireNonNullElseGet(month, () -> currentMonth.getDate().getMonthValue());
+        final int yearInteger = Objects.requireNonNullElseGet(month, () -> currentMonth.getDate().getYear());
         List<ClockTime> allClocksThisMonth = new ArrayList<>(clockTimes).stream()
-                                                                        .filter(clockTime -> clockTime.getDate().getMonthValue()
-                                                                                == monthInteger)
+                                                                        .filter(clockTime ->
+                                                                                clockTime.getDate().getMonthValue() == monthInteger
+                                                                                        && clockTime.getDate().getYear() == yearInteger)
                                                                         .collect(Collectors.toList());
         if (month == null && getCurrentClockType(clockTimes) == ClockType.CLOCK_IN) {
-            //add fake clockOut
-            allClocksThisMonth.add(now);
+            //remove last stamp
+            if (!allClocksThisMonth.isEmpty()) {
+                allClocksThisMonth.remove(allClocksThisMonth.size() - 1);
+            }
         }
-        int dayOfMonth = month == null ? now.getDate().getDayOfMonth() : 31;
+        int dayOfMonth = month == null ? currentMonth.getDate().getDayOfMonth() : 31;
         int overallWorkedMinutes = 0;
         for (int i = 1; i <= dayOfMonth; i++) {
             final int dom = i;
