@@ -88,7 +88,7 @@ public class TimeClockStamperService {
         if (!day.isEmpty()) {
             overallWorkedMinutes = getOverallMinutes(day);
         }
-        return toHoursAndMinutes(overallWorkedMinutes) + ". Left to 8 hours: " + toHoursAndMinutes(
+        return toHoursAndMinutes(overallWorkedMinutes) + ". Left: " + toHoursAndMinutes(
                 EIGHT_HOURS_IN_MINUTES - overallWorkedMinutes);
     }
 
@@ -181,7 +181,11 @@ public class TimeClockStamperService {
     }
 
     private String toHoursAndMinutes(int overallWorkedMinutes) {
-        return (overallWorkedMinutes / 60) + "h " + overallWorkedMinutes % 60 + "m";
+        return prependZero(overallWorkedMinutes / 60) + "h " + prependZero(overallWorkedMinutes % 60) + "m";
+    }
+
+    private String prependZero(int currentMonth) {
+        return currentMonth < 10 ? "0" + currentMonth : "" + currentMonth;
     }
 
     private int toMinutes(int hour, int minute) {
