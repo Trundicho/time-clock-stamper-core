@@ -185,7 +185,7 @@ public class TimeClockStamperService {
     }
 
     private String prependZero(int currentMonth) {
-        return currentMonth < 10 ? "0" + currentMonth : "" + currentMonth;
+        return (currentMonth < 10 && currentMonth > -10) ? "0" + currentMonth : "" + currentMonth;
     }
 
     private int toMinutes(int hour, int minute) {
