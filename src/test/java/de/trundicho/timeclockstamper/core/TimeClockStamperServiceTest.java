@@ -54,7 +54,7 @@ class TimeClockStamperServiceTest {
         ClockTime stamp3 = createClockTime(now, 17, 0).setPause(30);
         objectMapper.writeValue(new File(createFileName(LocalDateTime.now())), List.of(stamp1, stamp2, stamp3));
         ClockTimeDataDto clockTimeDto = timeClockStamperService.getTimeClockResponse();
-        assertThat(clockTimeDto.getHoursWorkedToday()).isEqualTo("07h 30m. Left: 00h 30m");
+        assertThat(clockTimeDto.getHoursWorkedToday()).isEqualTo("07h30m. Left: 00h30m");
     }
 
     @Test
@@ -66,7 +66,7 @@ class TimeClockStamperServiceTest {
         ClockTime stamp4 = createClockTime(now, 17, 0);
         objectMapper.writeValue(new File(createFileName(LocalDateTime.now())), List.of(stamp1, stamp2, stamp3, stamp4));
         ClockTimeDataDto clockTimeDto = timeClockStamperService.getTimeClockResponse();
-        assertThat(clockTimeDto.getHoursWorkedToday()).isEqualTo("07h 00m. Left: 01h 00m");
+        assertThat(clockTimeDto.getHoursWorkedToday()).isEqualTo("07h00m. Left: 01h00m");
     }
 
     @Test
@@ -78,7 +78,7 @@ class TimeClockStamperServiceTest {
         objectMapper.writeValue(new File(createFileName(specificDay)), List.of(stamp1, stamp2, stamp3, stamp4));
         ClockTimeDataDto clockTimeDto = timeClockStamperService.getDay(specificDay.getYear(), specificDay.getMonthValue(),
                 specificDay.getDayOfMonth());
-        assertThat(clockTimeDto.getHoursWorkedToday()).isEqualTo("07h 00m. Left: 01h 00m");
+        assertThat(clockTimeDto.getHoursWorkedToday()).isEqualTo("07h00m. Left: 01h00m");
     }
 
     @Test
@@ -90,12 +90,12 @@ class TimeClockStamperServiceTest {
         objectMapper.writeValue(new File(createFileName(specificDay)), List.of(stamp1, stamp2, stamp3, stamp4));
         ClockTimeDataDto clockTimeDto = timeClockStamperService.getDay(specificDay.getYear(), specificDay.getMonthValue(),
                 specificDay.getDayOfMonth());
-        assertThat(clockTimeDto.getHoursWorkedToday()).isEqualTo("07h 00m. Left: 01h 00m");
+        assertThat(clockTimeDto.getHoursWorkedToday()).isEqualTo("07h00m. Left: 01h00m");
         clockTimeDto.getClockTimes().add(createClockTimeDto(specificDay, 7, 0));
         clockTimeDto.getClockTimes().add(createClockTimeDto(specificDay, 8, 30));
         ClockTimeDataDto updated = timeClockStamperService.setDay(clockTimeDto, specificDay.getYear(), specificDay.getMonthValue(),
                 specificDay.getDayOfMonth());
-        assertThat(updated.getHoursWorkedToday()).isEqualTo("08h 30m. Left: 00h -30m");
+        assertThat(updated.getHoursWorkedToday()).isEqualTo("08h30m. Left: -00h30m");
     }
 
     private ClockTime createClockTime(LocalDateTime now, int hour, int minute) {
@@ -107,7 +107,7 @@ class TimeClockStamperServiceTest {
     }
 
     private String createFileName(LocalDateTime date) {
-        int currentMonth = date.getMonthValue();
+        int currentMonth= date.getMonthValue();
         String month = currentMonth < 10 ? "0" + currentMonth : "" + currentMonth;
         int year = date.getYear();
         return year + "-" + month + "-" + persistenceFile;

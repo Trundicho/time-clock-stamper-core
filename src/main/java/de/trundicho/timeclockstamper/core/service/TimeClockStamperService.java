@@ -88,8 +88,7 @@ public class TimeClockStamperService {
         if (!day.isEmpty()) {
             overallWorkedMinutes = getOverallMinutes(day);
         }
-        return toHoursAndMinutes(overallWorkedMinutes) + ". Left: " + toHoursAndMinutes(
-                EIGHT_HOURS_IN_MINUTES - overallWorkedMinutes);
+        return toHoursAndMinutes(overallWorkedMinutes) + ". Left: " + toHoursAndMinutes(EIGHT_HOURS_IN_MINUTES - overallWorkedMinutes);
     }
 
     private String overtimeMonth(List<ClockTime> clockTimes, Integer year, Integer month) {
@@ -131,7 +130,7 @@ public class TimeClockStamperService {
     }
 
     private int getOverallMinutes(List<ClockTime> todayClockTimes) {
-        Integer allPausesOnDay = todayClockTimes.stream()
+        int allPausesOnDay = todayClockTimes.stream()
                                                 .map(ClockTime::getPause)
                                                 .filter(Objects::nonNull)
                                                 .mapToInt(Integer::intValue)
@@ -181,11 +180,19 @@ public class TimeClockStamperService {
     }
 
     private String toHoursAndMinutes(int overallWorkedMinutes) {
-        return prependZero(overallWorkedMinutes / 60) + "h " + prependZero(overallWorkedMinutes % 60) + "m";
+        int workedMinutes = overallWorkedMinutes;
+        if (overallWorkedMinutes < 0) {
+            workedMinutes = overallWorkedMinutes * -1;
+        }
+        String s = prependZero(workedMinutes / 60) + "h" + prependZero(workedMinutes % 60) + "m";
+        return overallWorkedMinutes < 0 ? "-" + s : s;
     }
 
     private String prependZero(int currentMonth) {
-        return (currentMonth < 10 && currentMonth > -10) ? "0" + currentMonth : "" + currentMonth;
+        if (currentMonth < 10) {
+            return "0" + currentMonth;
+        }
+        return "" + currentMonth;
     }
 
     private int toMinutes(int hour, int minute) {
