@@ -27,7 +27,12 @@ public class TimeClockStamperApiImpl implements TimeClockStamperApi {
     private final ClockTimeDataMapper mapper;
 
     public TimeClockStamperApiImpl(String timeZone, ClockTimePersistencePort clockTimePersistencePort) {
-        timeClockStamperService = new TimeClockStamperService(timeZone, clockTimePersistencePort);
+        this(timeZone, clockTimePersistencePort, 480);
+    }
+
+    public TimeClockStamperApiImpl(String timeZone, ClockTimePersistencePort clockTimePersistencePort,
+            int hoursToWorkPerDayInMinutes) {
+        timeClockStamperService = new TimeClockStamperService(timeZone, clockTimePersistencePort, hoursToWorkPerDayInMinutes);
         mapper = Mappers.getMapper(ClockTimeDataMapper.class);
     }
 
