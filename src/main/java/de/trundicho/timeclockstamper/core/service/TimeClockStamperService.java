@@ -19,13 +19,19 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class TimeClockStamperService {
 
-    private static final int EIGHT_HOURS_IN_MINUTES = 480;
+    private final int hoursToWorkPerDayInMinutes;
     private final ClockTimePersistencePort clockTimePersistencePort;
     private final String timezone;
 
     public TimeClockStamperService(String timeZone, ClockTimePersistencePort clockTimePersistencePort) {
+        this(timeZone, clockTimePersistencePort, 480);
+    }
+
+    public TimeClockStamperService(String timeZone, ClockTimePersistencePort clockTimePersistencePort,
+            int hoursToWorkPerDayInMinutes) {
         this.clockTimePersistencePort = clockTimePersistencePort;
         this.timezone = timeZone;
+        this.hoursToWorkPerDayInMinutes = hoursToWorkPerDayInMinutes;
     }
 
     public ClockTimeData stampInOrOut() {
@@ -88,7 +94,7 @@ public class TimeClockStamperService {
         if (!day.isEmpty()) {
             overallWorkedMinutes = getOverallMinutes(day);
         }
-        return toHoursAndMinutes(overallWorkedMinutes) + ". Left: " + toHoursAndMinutes(EIGHT_HOURS_IN_MINUTES - overallWorkedMinutes);
+        return toHoursAndMinutes(overallWorkedMinutes) + ". Left: " + toHoursAndMinutes(hoursToWorkPerDayInMinutes - overallWorkedMinutes);
     }
 
     private String overtimeMonth(List<ClockTime> clockTimes, Integer year, Integer month) {
@@ -120,12 +126,12 @@ public class TimeClockStamperService {
                                                             .filter(clockTime -> clockTime.getDate().getDayOfMonth() == dom)
                                                             .collect(Collectors.toList());
             if (clocksAtDay.isEmpty()) {
-                overallWorkedMinutes += EIGHT_HOURS_IN_MINUTES;
+                overallWorkedMinutes += hoursToWorkPerDayInMinutes;
             } else {
                 overallWorkedMinutes += getOverallMinutes(clocksAtDay);
             }
         }
-        int minutesToWorkUntilToday = dayOfMonth * EIGHT_HOURS_IN_MINUTES;
+        int minutesToWorkUntilToday = dayOfMonth * hoursToWorkPerDayInMinutes;
         return toHoursAndMinutes(overallWorkedMinutes - minutesToWorkUntilToday);
     }
 
@@ -139,11 +145,11 @@ public class TimeClockStamperService {
         Collections.reverse(todayClocksReverse);
         if (todayClocksReverse.size() % 2 == 1) {
             log.error("Not correct clocked day: " + todayClocksReverse + " assuming 8 hours of work");
-            return EIGHT_HOURS_IN_MINUTES;
+            return hoursToWorkPerDayInMinutes;
         }
         if (todayClocksReverse.isEmpty()) {
             log.info("Not clocked on this day, assuming 8 hours of work");
-            return EIGHT_HOURS_IN_MINUTES;
+            return hoursToWorkPerDayInMinutes;
         }
         LocalDateTime lastClock = todayClocksReverse.get(0).getDate();
         int overallWorkedMinutes = 0;
